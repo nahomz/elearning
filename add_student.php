@@ -1,135 +1,120 @@
-<?php
-$get_id=$_GET['id'];
-include('header.php');
-include ('session.php');
-$user_query = mysqli_query($conn,"select * from teacher where teacher_id='$session_id'") or die(mysqli_error());
-$user_row = mysqli_fetch_array($user_query);
-
-$course_query = mysqli_query($conn,"select * from class where teacher_id='$session_id'") or die(mysqli_error());
-$course_row = mysqli_fetch_array($course_query);
-$subect_id = $course_row['subject_id'];
-?>
-<?php
-$query_class = mysqli_query($conn,"select * from class where teacher_id='$session_id'") or die(mysqli_error());
-$row_class = mysqli_fetch_array($query_class);
-$id_class = $row_class['class_id'];
-?>
+<?php include('header.php'); ?>
+<?php include('session.php'); ?>
 <body>
 
-    <?php include('navhead_user.php'); ?>
+    <div class="row-fluid">
+        <div class="span12">
 
-    <div class="container">
-        <div class="row-fluid">
-            <div class="span3">
-                <div class="hero-unit-3">
-                    <div class="alert-index alert-success">
-                        <i class="icon-calendar icon-large"></i>
-                        <?php
-                        $Today = date('y:m:d');
-                        $new = date('l, F d, Y', strtotime($Today));
-                        echo $new;
-                        ?>
-                    </div>
-                </div>
-                <div class="hero-unit-1">
-                    <ul class="nav  nav-pills nav-stacked">
-                        <li class="nav-header">Links</li>
-                        <li>
-                            <a href="teacher_home.php"><i class="icon-home icon-large"></i>&nbsp;Home
-                                <div class="pull-right">
-                                    <i class="icon-double-angle-right icon-large"></i>
-                                </div>  
-                            </a>
+            <?php include('navbar.php'); ?>
 
-                        </li>
-                        <li   class="active">
-                            <a href="teacher_class.php"><i class="icon-group icon-large"></i>&nbsp;Class
-                                <div class="pull-right">
-                                    <i class="icon-double-angle-right icon-large"></i>
-                                </div>  
-                            </a></li>
-                        <li><a href="teacher_subject.php"><i class="icon-file-alt icon-large"></i>&nbsp;Subjects
-                                <div class="pull-right">
-                                    <i class="icon-double-angle-right icon-large"></i>
-                                </div>  
-                            </a></li>
-                        <li><a href="students.php"><i class="icon-group icon-large"></i>&nbsp;Students
-                                <div class="pull-right">
-                                    <i class="icon-double-angle-right icon-large"></i>
-                                </div>  
-                            </a></li>
+            <div class="container">
 
+                <div class="row-fluid">
 
-                    </ul>
-                </div>
+                    <div class="span12">
 
-            </div>
-            <div class="span9">
-                <a href="" class="btn btn-success"><i class="icon-group icon-large"></i>&nbsp;<?php echo $course_row['course_id']; ?></a>
-                <br><br>
-                <div class="alert alert-success"> 
-                    <strong>Subject:&nbsp;<?php echo $course_row['subject_id']; ?></strong>
-                </div>
-
-
-                <div class="hero-unit-3">
-                    <div class="alert alert-info">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong><i class="icon-user icon-large"></i>&nbsp;Add Students</strong>
-                    </div>
-
-                    <div class="row-fluid">
-                        <div class="span9">
-                            <form class="form-horizontal" method="POST">
+                        <div class="hero-unit-3">
+                            <a href="student.php" class="btn btn-success"><i class="icon-arrow-left icon-large"></i>&nbsp;Back</a>
+                            <br><br>
+                            <?php 
+                            if(isset($_GET['id'])){
+                                $subject = mysqli_query($conn, "SELECT * FROM student where student_id = {$_GET['id']}");
+                                foreach(mysqli_fetch_array($subject) as $k => $v){
+                                    $$k = $v;
+                                }
+                            }
+                            ?>
+                            <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="<?php echo isset($_GET['id']) ? $_GET['id'] : '' ?>">
                                 <div class="control-group">
-                                    <label class="control-label" for="inputEmail">Student</label>
+                                    <label class="control-label" for="inputEmail">Username</label>
                                     <div class="controls">
-
-                                        <select name="student" class="span6" required>
-                                            <option></option>
-                                            <?php
-                                            $query = mysqli_query($conn,"select * from teacher_student where teacher_id = '$session_id'") or die(mysqli_error());
-                                            while ($row = mysqli_fetch_array($query)) {
-                                                $student_id = $row['student_id'];
-                                                $student_query = mysqli_query($conn,"select * from student where student_id='$student_id'") or die(mysqli_error());
-                                                $student_row = mysqli_fetch_array($student_query);
-                                                ?>
-
-
-                                                ?>
-                                                <option value="<?php echo $student_id; ?>"><?php echo $student_row['firstname'] . " " . $student_row['lastname']; ?></option>
-                                            <?php } ?>
-
-                                            <input type="hidden" name="teacher_id" value="<?php echo $session_id; ?>">
-
-                                            <input type="hidden" name="cys" value="<?php echo $course_row['course_id']; ?>">
-                                            <input type="hidden" name="subject" value="<?php echo $course_row['subject_id']; ?>">
-
-                                        </select>
+                                        <input type="text" name="un" id="inputEmail" placeholder="Username" required value="<?php echo isset($username) ? $username : "" ?>">
                                     </div>
                                 </div>
-
+                                <div class="control-group">
+                                    <label class="control-label" for="inputPassword">Password</label>
+                                    <div class="controls">
+                                        <input type="password" name="p" id="inputPassword" placeholder="Password" <?php echo (isset($password)) ? "" : 'required' ?>>
+                                        <?php echo (isset($password)) ? "<i>Leave this blank if you dont want to change your password.</i>" : '' ?>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="inputEmail">Firstname</label>
+                                    <div class="controls">
+                                        <input type="text" name="fn" id="inputEmail" placeholder="Firstname" required  value="<?php echo isset($firstname) ? $firstname : "" ?>">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="inputEmail">Lastname</label>
+                                    <div class="controls">
+                                        <input type="text" name="ln" id="inputEmail" placeholder="Lastname" value="<?php echo isset($lastname) ? $lastname : "" ?>" required>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="inputEmail">Middlename</label>
+                                    <div class="controls">
+                                        <input type="text" name="mn" id="inputEmail" placeholder="Middlename" value="<?php echo isset($middle_name) ? $middle_name : "" ?>" required>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="input01">Image:</label>
+                                    <div class="controls">
+                                        <input type="file" name="image" class="font" <?php echo (isset($location)) ? "" : 'required' ?>> 
+                                    </div>
+                                </div>
+                                <img src="<?php echo isset($location) && is_file($location) ? $location : '' ?>" alt="">
                                 <div class="control-group">
                                     <div class="controls">
-                                        <button type="submit" name="save_subject" class="btn btn-success"><i class="icon-plus-sign icon-large"></i>&nbsp;Add Students</button>
+
+                                        <button type="submit" name="submit" class="btn btn-info"><i class="icon-save icon-large"></i>&nbsp;Save</button>
                                     </div>
                                 </div>
                             </form>
 
                             <?php
-                            if (isset($_POST['save_subject'])) {
-                                $subject=$_POST['subject'];
-                                $cys = $_POST['cys'];
-                                $student = $_POST['student'];
+                            if (isset($_POST['submit'])) {
+                                $un = $_POST['un'];
+                                $p = $_POST['p'];
+                                $fn = $_POST['fn'];
+                                $ln = $_POST['ln'];
+                                $mn = $_POST['mn'];
 
-                                $teacher_id = $_POST['teacher_id'];
+                                
+                                if(!empty($_FILES["image"]["tmp_name"])){
+                                    $image = addslashes(file_get_contents($_FILES['image']['tmp_name']));
+                                    $image_name = addslashes($_FILES['image']['name']);
+                                    $image_size = getimagesize($_FILES['image']['tmp_name']);
+                                    move_uploaded_file($_FILES["image"]["tmp_name"], "uploads/" . $_FILES["image"]["name"]);
+                                    $location = "uploads/" . $_FILES["image"]["name"];
+                                }
+                                
+                                if(empty($_POST['id']))
+                                mysqli_query($conn,"insert into student (username,password,firstname,lastname,middle_name,location)
+                                    values ('$un','$p','$fn','$ln','$mn','$location')                                    
+                                    ") or die(mysqli_error());
+                                else{
+                                    if(!empty($p)){
+                                        $pw = " , password='$p' ";
+                                    }else{
+                                        $pw = '';
+                                    }
+                                    if(isset($location)){
+                                        $loc = " , location='$location' ";
+                                    }else{
+                                        $loc = '';
+                                    }
+                                    mysqli_query($conn,"UPDATE student set
+                                        username='$un',
+                                        firstname = '$fn',
+                                        lastname = '$ln',
+                                        middle_name = '$mn'
+                                        $loc
+                                        $pw where student_id = {$_POST['id']}                                    
+                                        ") or die(mysqli_error());
+                                }
 
-                                mysqli_query($conn,"insert into sws (teacher_id,student_id,cys,subject_id,class_id) values('$teacher_id','$student','$cys','$subject','$get_id')") or die(mysqli_error());
-                                ?>
-                                <script type="text/javascript">
-                                    window.location="class.php<?php echo '?id=' . $id_class; ?>";                          
-                                </script>
-                                <?php
+                                echo('<script>location.href = "student.php"</script>');
                             }
                             ?>
 
@@ -137,18 +122,11 @@ $id_class = $row_class['class_id'];
                         </div>
 
                     </div>
-
-
-                    <!-- end slider -->
                 </div>
+<?php include('footer.php'); ?>
             </div>
-
         </div>
-        <?php include('footer.php'); ?>
     </div>
-</div>
-</div>
-
 
 
 

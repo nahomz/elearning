@@ -1,5 +1,4 @@
-<br>
-<div class="navbar  navbar-inverse">
+<div class="navbar navbar-fixed-bottom navbar-inverse">
     <div class="navbar-inner">
         <div class="footerindex">
             <center><img width="25" height="25" src="img/chmsc.png">&nbsp;Rift Valley E-Learning System Developed by Rift Valley Computer Science students Design and Programmed by: Nahom Zelalem :-P</center>
